@@ -1,0 +1,36 @@
+# Rust build artifacts
+/target/
+**/*.rs.bk
+*.pdb
+
+# Cargo backup
+Cargo.lock.bak
+
+# Environment and secrets — never commit these
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+credentials.json
+secrets.json
+**/secrets/
+
+# IDE and OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Debug and profiling
+*.profraw
+*.profdata
+
+# Local runtime artifacts (Unix sockets, audit logs from demos)
+/tmp/
+
+# Cursor / editor local state
+.cursor/

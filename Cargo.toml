@@ -1,0 +1,91 @@
+[workspace]
+resolver = "2"
+members = [
+    ".",
+    "messaggero-core",
+    "messaggero-transport",
+    "messaggero-macros",
+    "demos/qwen-agents",
+    "demos/audit-log",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+rust-version = "1.75"
+authors = ["Cristiano Cuttica <cristiano.cuttica@yahoo.it>"]
+repository = "https://github.com/mioCry/messaggero"
+homepage = "https://github.com/mioCry/messaggero"
+documentation = "https://docs.rs/messaggero"
+keywords = ["agents", "a2a", "ipc", "async", "protocol"]
+categories = ["network-programming", "asynchronous", "concurrency"]
+
+[workspace.dependencies]
+messaggero-core = { path = "messaggero-core", version = "0.1.0" }
+messaggero-transport = { path = "messaggero-transport", version = "0.1.0" }
+messaggero-macros = { path = "messaggero-macros", version = "0.1.0" }
+
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+uuid = { version = "1", features = ["v4", "serde"] }
+thiserror = "2"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+async-trait = "0.1"
+bytes = "1"
+bincode = "1"
+axum = "0.8"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls", "stream"] }
+tokio-util = { version = "0.7", features = ["codec"] }
+futures-util = { version = "0.3", features = ["sink"] }
+criterion = { version = "0.5", features = ["async_tokio"] }
+
+[package]
+name = "messaggero"
+description = "High-performance agent-to-agent communication protocol for Rust. A2A-compatible over HTTP/JSON-RPC with a zero-overhead binary fast path over Unix sockets for local multi-agent systems."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+keywords.workspace = true
+categories.workspace = true
+readme = "README.md"
+exclude = ["demos/**", ".github/**"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[dependencies]
+messaggero-core = { workspace = true }
+messaggero-transport = { workspace = true }
+messaggero-macros = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+async-trait = { workspace = true }
+futures-util = { workspace = true }
+
+[dev-dependencies]
+tracing-subscriber = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+criterion = { workspace = true }
+bincode = { workspace = true }
+
+[[bench]]
+name = "fast_transport"
+harness = false
+
+[[bench]]
+name = "serialization"
+harness = false
+
+[features]
+default = ["fast", "a2a"]
+fast = ["messaggero-transport/fast"]
+a2a = ["messaggero-transport/a2a"]
+transport-log = ["messaggero-transport/transport-log"]
+full = ["fast", "a2a", "transport-log"]

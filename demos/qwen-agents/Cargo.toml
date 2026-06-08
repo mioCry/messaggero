@@ -1,0 +1,19 @@
+[package]
+name = "qwen-agents"
+description = "Demo: multi-agent system using messaggero + Ollama qwen3.5:4b"
+version.workspace = true
+edition.workspace = true
+publish = false
+
+[dependencies]
+messaggero = { path = "../..", features = ["transport-log"] }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+reqwest = { workspace = true }
+async-trait = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+uuid = { workspace = true }
+futures-util = { workspace = true }
+bytes = { workspace = true }
