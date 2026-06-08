@@ -2,14 +2,14 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use messaggero_core::{TaskRequest, TaskResponse, TransportError};
+use crate::core::{TaskRequest, TaskResponse, TransportError};
 use tokio::sync::RwLock;
 
 #[cfg(feature = "fast")]
-use crate::fast;
+use super::fast;
 
 #[cfg(feature = "a2a")]
-use crate::a2a;
+use super::a2a;
 
 /// Describes how to reach a specific agent.
 #[derive(Debug, Clone)]
@@ -29,13 +29,13 @@ pub enum AgentEndpoint {
 ///
 /// When the `transport-log` feature is enabled, call
 /// [`with_transport_logger`](Self::with_transport_logger) to attach a
-/// [`TransportLogger`](crate::log::TransportLogger). Every `send` call will
-/// then record a [`LogEntry`](crate::log::LogEntry) with the round-trip
+/// [`TransportLogger`](super::log::TransportLogger). Every `send` call will
+/// then record a [`LogEntry`](super::log::LogEntry) with the round-trip
 /// duration and the transport kind actually used.
 pub struct Router {
     endpoints: Arc<RwLock<HashMap<String, AgentEndpoint>>>,
     #[cfg(feature = "transport-log")]
-    logger: Option<crate::log::TransportLogger>,
+    logger: Option<super::log::TransportLogger>,
 }
 
 impl Router {
@@ -54,11 +54,11 @@ impl Router {
     /// one entry per `send` call with the correct [`TransportKind`] (fast or
     /// a2a) and the full round-trip duration.
     ///
-    /// [`TransportLogger`]: crate::log::TransportLogger
-    /// [`TransportKind`]: crate::log::TransportKind
+    /// [`TransportLogger`]: super::log::TransportLogger
+    /// [`TransportKind`]: super::log::TransportKind
     #[must_use]
     #[cfg(feature = "transport-log")]
-    pub fn with_transport_logger(mut self, logger: crate::log::TransportLogger) -> Self {
+    pub fn with_transport_logger(mut self, logger: super::log::TransportLogger) -> Self {
         self.logger = Some(logger);
         self
     }
@@ -132,10 +132,10 @@ impl Router {
                         Ok(_) => ("ok", None),
                         Err(e) => ("error", Some(e.to_string())),
                     };
-                    logger.record(crate::log::LogEntry {
-                        ts: crate::log::now_iso8601(),
-                        transport: crate::log::TransportKind::Fast,
-                        direction: crate::log::Direction::Outbound,
+                    logger.record(super::log::LogEntry {
+                        ts: super::log::now_iso8601(),
+                        transport: super::log::TransportKind::Fast,
+                        direction: super::log::Direction::Outbound,
                         task_id: log_task_id,
                         session_id: log_session_id,
                         duration_us,
@@ -179,10 +179,10 @@ impl Router {
                         Ok(_) => ("ok", None),
                         Err(e) => ("error", Some(e.to_string())),
                     };
-                    logger.record(crate::log::LogEntry {
-                        ts: crate::log::now_iso8601(),
-                        transport: crate::log::TransportKind::A2a,
-                        direction: crate::log::Direction::Outbound,
+                    logger.record(super::log::LogEntry {
+                        ts: super::log::now_iso8601(),
+                        transport: super::log::TransportKind::A2a,
+                        direction: super::log::Direction::Outbound,
                         task_id: log_task_id,
                         session_id: log_session_id,
                         duration_us,

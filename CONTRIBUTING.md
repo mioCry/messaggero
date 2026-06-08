@@ -159,4 +159,4 @@ Releases are managed by maintainers:
 2. Update `CHANGELOG.md` — move `[Unreleased]` entries to the new version.
 3. Commit: `chore: release v0.x.y`
 4. Tag: `git tag v0.x.y && git push --tags`
-5. The `publish.yml` GitHub Actions workflow handles the rest.
+5. The `publish.yml` GitHub Actions workflow publishes the single `messaggero` crate to crates.io.

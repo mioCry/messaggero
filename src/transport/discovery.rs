@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use messaggero_core::AgentCard;
+use crate::core::AgentCard;
 use tokio::sync::RwLock;
 
-use crate::router::{AgentEndpoint, Router};
+use super::router::{AgentEndpoint, Router};
 
 /// Local agent registry for discovery.
 ///
@@ -75,9 +75,9 @@ impl Discovery {
     pub async fn discover_remote(
         &self,
         base_url: impl Into<String>,
-    ) -> Result<AgentCard, messaggero_core::TransportError> {
+    ) -> Result<AgentCard, crate::core::TransportError> {
         let url = base_url.into();
-        let client = crate::a2a::A2AClient::new(&url);
+        let client = super::a2a::A2AClient::new(&url);
         let card = client.agent_card().await?;
         self.register(card.clone(), AgentEndpoint::Http(url)).await;
         Ok(card)

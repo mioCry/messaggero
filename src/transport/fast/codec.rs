@@ -1,5 +1,5 @@
 use bytes::{Buf, BufMut, BytesMut};
-use messaggero_core::{CodecError, TaskRequest, TaskResponse};
+use crate::core::{CodecError, TaskRequest, TaskResponse};
 use serde::{Deserialize, Serialize};
 use tokio_util::codec::{Decoder, Encoder};
 
@@ -73,7 +73,7 @@ impl Encoder<FastMessage> for FastCodec {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use messaggero_core::Message;
+    use crate::core::Message;
 
     #[test]
     fn roundtrip_through_codec() {

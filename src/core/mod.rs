@@ -1,3 +1,5 @@
+#![allow(clippy::all)]
+
 pub mod agent;
 pub mod codec;
 pub mod error;

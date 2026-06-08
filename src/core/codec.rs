@@ -1,6 +1,6 @@
 use serde::{de::DeserializeOwned, Serialize};
 
-use crate::CodecError;
+use super::CodecError;
 
 /// Wire encoding format.
 #[non_exhaustive]
@@ -31,7 +31,7 @@ pub fn decode<T: DeserializeOwned>(data: &[u8], encoding: Encoding) -> Result<T,
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{Message, TaskRequest};
+    use crate::core::types::{Message, TaskRequest};
 
     #[test]
     fn roundtrip_json() {

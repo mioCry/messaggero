@@ -2,7 +2,7 @@ use std::path::Path;
 use std::sync::Arc;
 
 use futures_util::{SinkExt, StreamExt};
-use messaggero_core::{Agent, TaskRequest, TransportError};
+use crate::core::{Agent, TaskRequest, TransportError};
 use tokio::net::{UnixListener, UnixStream};
 use tokio_util::codec::Framed;
 use tracing::{error, info};
@@ -71,7 +71,7 @@ async fn handle_connection(
 pub struct FastClient {
     framed: Framed<UnixStream, FastCodec>,
     #[cfg(feature = "transport-log")]
-    logger: Option<crate::log::TransportLogger>,
+    logger: Option<super::super::log::TransportLogger>,
 }
 
 impl FastClient {
@@ -88,13 +88,13 @@ impl FastClient {
     /// Attach a [`TransportLogger`] to record every outbound task request.
     ///
     /// Available only with the `transport-log` feature. Each `send_task` call
-    /// will enqueue one [`LogEntry`](crate::log::LogEntry) with the round-trip
+    /// will enqueue one [`LogEntry`](super::super::log::LogEntry) with the round-trip
     /// duration.
     ///
-    /// [`TransportLogger`]: crate::log::TransportLogger
+    /// [`TransportLogger`]: super::super::log::TransportLogger
     #[must_use]
     #[cfg(feature = "transport-log")]
-    pub fn with_logger(mut self, logger: crate::log::TransportLogger) -> Self {
+    pub fn with_logger(mut self, logger: super::super::log::TransportLogger) -> Self {
         self.logger = Some(logger);
         self
     }
@@ -105,10 +105,10 @@ impl FastClient {
     /// Useful when the client was already constructed and you want to add
     /// logging afterwards (e.g. inside [`MessaggeroClient`](crate)).
     ///
-    /// [`TransportLogger`]: crate::log::TransportLogger
+    /// [`TransportLogger`]: super::super::log::TransportLogger
     /// [`mpsc::Sender`]: tokio::sync::mpsc::Sender
     #[cfg(feature = "transport-log")]
-    pub fn set_logger(&mut self, logger: &crate::log::TransportLogger) {
+    pub fn set_logger(&mut self, logger: &super::super::log::TransportLogger) {
         self.logger = Some(logger.clone());
     }
 
@@ -155,10 +155,10 @@ impl FastClient {
                 Ok(_) => ("ok", None),
                 Err(e) => ("error", Some(e.to_string())),
             };
-            logger.record(crate::log::LogEntry {
-                ts: crate::log::now_iso8601(),
-                transport: crate::log::TransportKind::Fast,
-                direction: crate::log::Direction::Outbound,
+            logger.record(super::super::log::LogEntry {
+                ts: super::super::log::now_iso8601(),
+                transport: super::super::log::TransportKind::Fast,
+                direction: super::super::log::Direction::Outbound,
                 task_id: log_task_id,
                 session_id: log_session_id,
                 duration_us,

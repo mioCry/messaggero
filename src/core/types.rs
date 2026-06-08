@@ -9,7 +9,7 @@ use uuid::Uuid;
 /// richer structured values should JSON-encode them before insertion:
 ///
 /// ```rust
-/// # use messaggero_core::Metadata;
+/// # use messaggero::Metadata;
 /// let mut meta = Metadata::new();
 /// meta.insert("config".into(), serde_json::json!({"timeout": 30}).to_string());
 /// ```
@@ -28,7 +28,7 @@ pub type Metadata = HashMap<String, String>;
 /// Use the builder API instead of constructing this struct directly:
 ///
 /// ```rust
-/// # use messaggero_core::AgentCard;
+/// # use messaggero::AgentCard;
 /// let card = AgentCard::builder("translator")
 ///     .description("Translates text between languages")
 ///     .version("2.0.0")
@@ -302,7 +302,7 @@ pub enum Role {
 /// # Examples
 ///
 /// ```rust
-/// # use messaggero_core::{Message, Role};
+/// # use messaggero::{Message, Role};
 /// let user_msg = Message::user("What is the weather in Rome?");
 /// assert_eq!(user_msg.role, Role::User);
 /// assert_eq!(user_msg.text_content(), Some("What is the weather in Rome?"));
@@ -434,7 +434,7 @@ pub struct Artifact {
 /// # Examples
 ///
 /// ```rust
-/// # use messaggero_core::{TaskRequest, Message};
+/// # use messaggero::{TaskRequest, Message};
 /// let req = TaskRequest::new(Message::user("Summarise this document."))
 ///     .with_session("session-abc");
 ///
@@ -478,7 +478,7 @@ impl TaskRequest {
 /// Use the convenience constructors instead of building this struct manually:
 ///
 /// ```rust
-/// # use messaggero_core::{TaskResponse, Message};
+/// # use messaggero::{TaskResponse, Message};
 /// let resp = TaskResponse::completed("task-1", Message::agent("Done!"));
 /// assert!(resp.artifacts.is_empty());
 ///

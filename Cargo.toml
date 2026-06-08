@@ -2,9 +2,6 @@
 resolver = "2"
 members = [
     ".",
-    "messaggero-core",
-    "messaggero-transport",
-    "messaggero-macros",
     "demos/qwen-agents",
     "demos/audit-log",
 ]
@@ -22,16 +19,14 @@ keywords = ["agents", "a2a", "ipc", "async", "protocol"]
 categories = ["network-programming", "asynchronous", "concurrency"]
 
 [workspace.dependencies]
-messaggero-core = { path = "messaggero-core", version = "0.1.0" }
-messaggero-transport = { path = "messaggero-transport", version = "0.1.0" }
-messaggero-macros = { path = "messaggero-macros", version = "0.1.0" }
+messaggero = { path = ".", version = "0.1.0" }
 
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 uuid = { version = "1", features = ["v4", "serde"] }
 thiserror = "2"
-tracing = "0.1"
+tracing = { version = "0.1" }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 async-trait = "0.1"
 bytes = "1"
@@ -49,7 +44,10 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 rust-version.workspace = true
+authors.workspace = true
 repository.workspace = true
+homepage.workspace = true
+documentation.workspace = true
 keywords.workspace = true
 categories.workspace = true
 readme = "README.md"
@@ -60,20 +58,24 @@ all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
 [dependencies]
-messaggero-core = { workspace = true }
-messaggero-transport = { workspace = true }
-messaggero-macros = { workspace = true }
 tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+thiserror = { workspace = true }
 tracing = { workspace = true }
 async-trait = { workspace = true }
+bytes = { workspace = true }
+bincode = { workspace = true }
 futures-util = { workspace = true }
+tokio-util = { workspace = true }
+
+axum = { workspace = true, optional = true }
+reqwest = { workspace = true, optional = true }
 
 [dev-dependencies]
 tracing-subscriber = { workspace = true }
-serde = { workspace = true }
-serde_json = { workspace = true }
 criterion = { workspace = true }
-bincode = { workspace = true }
 
 [[bench]]
 name = "fast_transport"
@@ -85,7 +87,7 @@ harness = false
 
 [features]
 default = ["fast", "a2a"]
-fast = ["messaggero-transport/fast"]
-a2a = ["messaggero-transport/a2a"]
-transport-log = ["messaggero-transport/transport-log"]
+fast = []
+a2a = ["dep:axum", "dep:reqwest"]
+transport-log = []
 full = ["fast", "a2a", "transport-log"]

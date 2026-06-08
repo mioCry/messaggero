@@ -7,39 +7,14 @@ on:
 
 jobs:
   publish:
-    name: Publish crates
+    name: Publish messaggero
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
 
-      # Publish in dependency order: core → macros → transport → umbrella
-      - name: Publish messaggero-core
-        run: cargo publish -p messaggero-core --no-verify
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-
-      - name: Wait for crates.io to index core
-        run: sleep 20
-
-      - name: Publish messaggero-macros
-        run: cargo publish -p messaggero-macros --no-verify
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-
-      - name: Wait for crates.io to index macros
-        run: sleep 20
-
-      - name: Publish messaggero-transport
-        run: cargo publish -p messaggero-transport --no-verify
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-
-      - name: Wait for crates.io to index transport
-        run: sleep 20
-
-      - name: Publish messaggero (umbrella)
-        run: cargo publish -p messaggero --no-verify
+      - name: Publish messaggero
+        run: cargo publish -p messaggero
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}

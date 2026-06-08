@@ -1,6 +1,7 @@
 use async_trait::async_trait;
 
-use crate::{AgentCard, AgentError, TaskRequest, TaskResponse, TaskState, TaskStatus};
+use super::error::AgentError;
+use super::types::{AgentCard, TaskRequest, TaskResponse, TaskState, TaskStatus};
 
 /// Core trait that every messaggero agent must implement.
 ///

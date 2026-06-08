@@ -9,6 +9,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+### Changed
+- Consolidated workspace into a single publishable crate (`messaggero`); internal modules live under `src/core/` and `src/transport/`.
+- crates.io publish workflow now publishes one crate only.
+
+### Removed
+- Separate workspace crates `messaggero-core`, `messaggero-transport`, and `messaggero-macros` (code merged into `messaggero`; use `AgentCard::builder()` instead of `#[derive(AgentCard)]`).
+
 ### Added
 - GitHub Actions CI workflow (`ci.yml`): fmt, clippy, tests, rustdoc, MSRV check.
 - GitHub Actions publish workflow (`publish.yml`): automated crates.io release on version tags.

@@ -5,8 +5,8 @@ use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::{get, post};
 use axum::{Json, Router};
-use messaggero_core::jsonrpc::*;
-use messaggero_core::{Agent, TaskRequest, TransportError};
+use crate::core::jsonrpc::*;
+use crate::core::{Agent, TaskRequest, TransportError};
 use tracing::info;
 
 struct AppState {

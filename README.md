@@ -53,14 +53,14 @@ with support from Google, AWS, Microsoft, and 150+ organizations.
 | Interoperability | Rust-to-Rust | Any A2A-compliant agent |
 | Discovery | In-process registry | `/.well-known/agent.json` |
 
-## Workspace Structure
+## Project Structure
 
-| Crate | Role |
+| Path | Role |
 |---|---|
-| `messaggero` | Umbrella crate: ServerBuilder, MessaggeroClient, re-exports |
-| `messaggero-core` | Wire types, Agent trait, Middleware, codec, JSON-RPC types |
-| `messaggero-transport` | Fast path server/client, A2A HTTP server/client, Router, Discovery |
-| `messaggero-macros` | Procedural macro: `#[derive(AgentCard)]` |
+| `src/core/` | Wire types, `Agent` trait, middleware pipeline, codec, JSON-RPC types |
+| `src/transport/` | Fast path server/client, A2A HTTP server/client, router, discovery |
+| `examples/` | Runnable examples (`ping_pong`, `multi_agent`) |
+| `demos/` | Optional demos (Ollama pipeline, audit logging) — not published to crates.io |
 
 ## Quick Start
 

@@ -1,12 +1,12 @@
-use messaggero_core::jsonrpc::*;
-use messaggero_core::{AgentCard, TaskRequest, TaskResponse, TransportError};
+use crate::core::jsonrpc::*;
+use crate::core::{AgentCard, TaskRequest, TaskResponse, TransportError};
 
 /// HTTP client for A2A-compatible JSON-RPC communication.
 pub struct A2AClient {
     base_url: String,
     http: reqwest::Client,
     #[cfg(feature = "transport-log")]
-    logger: Option<crate::log::TransportLogger>,
+    logger: Option<super::super::log::TransportLogger>,
 }
 
 impl A2AClient {
@@ -23,13 +23,13 @@ impl A2AClient {
     /// Attach a [`TransportLogger`] to record every outbound task request.
     ///
     /// Available only with the `transport-log` feature. Each `send_task` call
-    /// will enqueue one [`LogEntry`](crate::log::LogEntry) with the round-trip
+    /// will enqueue one [`LogEntry`](super::super::log::LogEntry) with the round-trip
     /// duration.
     ///
-    /// [`TransportLogger`]: crate::log::TransportLogger
+    /// [`TransportLogger`]: super::super::log::TransportLogger
     #[must_use]
     #[cfg(feature = "transport-log")]
-    pub fn with_logger(mut self, logger: crate::log::TransportLogger) -> Self {
+    pub fn with_logger(mut self, logger: super::super::log::TransportLogger) -> Self {
         self.logger = Some(logger);
         self
     }
@@ -40,7 +40,7 @@ impl A2AClient {
     /// Useful when the client is already constructed and you want to add
     /// logging afterwards (e.g. inside `MessaggeroClient`).
     #[cfg(feature = "transport-log")]
-    pub fn set_logger(&mut self, logger: &crate::log::TransportLogger) {
+    pub fn set_logger(&mut self, logger: &super::super::log::TransportLogger) {
         self.logger = Some(logger.clone());
     }
 
@@ -92,10 +92,10 @@ impl A2AClient {
                 Ok(_) => ("ok", None),
                 Err(e) => ("error", Some(e.to_string())),
             };
-            logger.record(crate::log::LogEntry {
-                ts: crate::log::now_iso8601(),
-                transport: crate::log::TransportKind::A2a,
-                direction: crate::log::Direction::Outbound,
+            logger.record(super::super::log::LogEntry {
+                ts: super::super::log::now_iso8601(),
+                transport: super::super::log::TransportKind::A2a,
+                direction: super::super::log::Direction::Outbound,
                 task_id: log_task_id,
                 session_id: log_session_id,
                 duration_us,

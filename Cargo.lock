@@ -858,58 +858,19 @@ name = "messaggero"
 version = "0.1.0"
 dependencies = [
  "async-trait",
- "bincode",
- "criterion",
- "futures-util",
- "messaggero-core",
- "messaggero-macros",
- "messaggero-transport",
- "serde",
- "serde_json",
- "tokio",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "messaggero-core"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "bincode",
- "bytes",
- "serde",
- "serde_json",
- "thiserror",
- "tracing",
- "uuid",
-]
-
-[[package]]
-name = "messaggero-macros"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
-name = "messaggero-transport"
-version = "0.1.0"
-dependencies = [
- "async-trait",
  "axum",
  "bincode",
  "bytes",
+ "criterion",
  "futures-util",
- "messaggero-core",
  "reqwest",
  "serde",
  "serde_json",
+ "thiserror",
  "tokio",
  "tokio-util",
  "tracing",
+ "tracing-subscriber",
  "uuid",
 ]
 

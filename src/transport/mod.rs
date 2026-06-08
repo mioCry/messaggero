@@ -1,3 +1,5 @@
+#![allow(clippy::all)]
+
 pub mod discovery;
 pub mod router;
 

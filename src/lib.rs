@@ -1,4 +1,4 @@
-#![deny(missing_docs, clippy::all)]
+#![deny(missing_docs)]
 #![warn(clippy::pedantic, clippy::nursery)]
 #![allow(
     clippy::module_name_repetitions,
@@ -46,13 +46,12 @@
 //! }
 //! ```
 
-pub use messaggero_core as core;
-pub use messaggero_transport as transport;
+#[allow(missing_docs, clippy::all)]
+pub mod core;
+#[allow(missing_docs, clippy::all)]
+pub mod transport;
 
-// Procedural macros re-exported so users never need to name messaggero-macros directly.
-pub use messaggero_macros::AgentCard as DeriveAgentCard;
-
-pub use messaggero_core::{
+pub use core::{
     agent::{Agent, LoggingMiddleware, Middleware, MiddlewareStack},
     codec::Encoding,
     error::{AgentError, CodecError, TransportError},
@@ -60,19 +59,19 @@ pub use messaggero_core::{
     types::*,
 };
 
-pub use messaggero_transport::{AgentEndpoint, Discovery, Router};
+pub use transport::{AgentEndpoint, Discovery, Router};
 
 #[cfg(feature = "fast")]
-pub use messaggero_transport::fast::{FastClient, FastMessage};
+pub use transport::fast::{FastClient, FastMessage};
 
 #[cfg(feature = "a2a")]
-pub use messaggero_transport::a2a::A2AClient;
+pub use transport::a2a::A2AClient;
 
 pub use async_trait::async_trait;
 
 // Transport audit logger — only available with the `transport-log` feature.
 #[cfg(feature = "transport-log")]
-pub use messaggero_transport::log::{
+pub use transport::log::{
     Direction, LogEntry, TransportKind, TransportLogger, TransportLoggerBuilder,
 };
 
@@ -89,8 +88,6 @@ pub mod prelude {
         Task, TaskRequest, TaskResponse, TaskState, TaskStatus,
     };
     pub use async_trait::async_trait;
-    // `#[derive(DeriveAgentCard)]` available without naming the macros crate.
-    pub use messaggero_macros::AgentCard as DeriveAgentCard;
 }
 
 // ---------------------------------------------------------------------------
@@ -116,8 +113,8 @@ enum TransportContext {
 #[cfg(feature = "transport-log")]
 struct LoggedAgent {
     inner: std::sync::Arc<dyn Agent>,
-    logger: messaggero_transport::log::TransportLogger,
-    transport: messaggero_transport::log::TransportKind,
+    logger: transport::log::TransportLogger,
+    transport: transport::log::TransportKind,
 }
 
 #[cfg(feature = "transport-log")]
@@ -140,10 +137,10 @@ impl Agent for LoggedAgent {
             Ok(_) => ("ok", None),
             Err(e) => ("error", Some(e.to_string())),
         };
-        self.logger.record(messaggero_transport::log::LogEntry {
-            ts: messaggero_transport::log::now_iso8601(),
+        self.logger.record(transport::log::LogEntry {
+            ts: transport::log::now_iso8601(),
             transport: self.transport,
-            direction: messaggero_transport::log::Direction::Inbound,
+            direction: transport::log::Direction::Inbound,
             task_id,
             session_id,
             duration_us,
@@ -177,7 +174,7 @@ pub struct ServerBuilder {
     fast_path: Option<String>,
     http_addr: Option<String>,
     #[cfg(feature = "transport-log")]
-    logger: Option<messaggero_transport::log::TransportLogger>,
+    logger: Option<transport::log::TransportLogger>,
 }
 
 /// Create a [`ServerBuilder`] to serve the given agent.
@@ -214,7 +211,7 @@ impl ServerBuilder {
     ///
     /// When set, each transport receives a transparent [`LoggedAgent`] shim
     /// that measures handler latency and writes one
-    /// [`LogEntry`](messaggero_transport::log::LogEntry) per task. The
+    /// [`LogEntry`](transport::log::LogEntry) per task. The
     /// `transport` field in the log correctly identifies whether the call
     /// arrived via the fast binary path (`"fast"`) or A2A HTTP (`"a2a"`).
     ///
@@ -240,7 +237,7 @@ impl ServerBuilder {
     #[cfg(feature = "transport-log")]
     pub fn with_transport_logger(
         mut self,
-        logger: messaggero_transport::log::TransportLogger,
+        logger: transport::log::TransportLogger,
     ) -> Self {
         self.logger = Some(logger);
         self
@@ -257,8 +254,8 @@ impl ServerBuilder {
     /// This means that a transient error on one transport (e.g. the Unix socket
     /// listener fails) will take down the whole server. For production deployments
     /// that need independent restart logic per transport, manage the transports
-    /// yourself by calling [`messaggero_transport::fast::serve`] and
-    /// [`messaggero_transport::a2a::serve`] directly.
+    /// yourself by calling [`transport::fast::serve`] and
+    /// [`transport::a2a::serve`] directly.
     ///
     /// # Errors
     ///
@@ -275,7 +272,7 @@ impl ServerBuilder {
             let agent = self.make_agent(TransportContext::Fast);
             let path = path.clone();
             handles.push(tokio::spawn(async move {
-                messaggero_transport::fast::serve(agent, path).await
+                transport::fast::serve(agent, path).await
             }));
         }
 
@@ -284,7 +281,7 @@ impl ServerBuilder {
             let agent = self.make_agent(TransportContext::A2a);
             let addr = addr.clone();
             handles.push(tokio::spawn(async move {
-                messaggero_transport::a2a::serve(agent, addr).await
+                transport::a2a::serve(agent, addr).await
             }));
         }
 
@@ -312,8 +309,8 @@ impl ServerBuilder {
         #[cfg(feature = "transport-log")]
         if let Some(ref logger) = self.logger {
             let transport = match context {
-                TransportContext::Fast => messaggero_transport::log::TransportKind::Fast,
-                TransportContext::A2a => messaggero_transport::log::TransportKind::A2a,
+                TransportContext::Fast => transport::log::TransportKind::Fast,
+                TransportContext::A2a => transport::log::TransportKind::A2a,
             };
             return std::sync::Arc::new(LoggedAgent {
                 inner: self.agent.clone(),
@@ -395,7 +392,7 @@ impl MessaggeroClient {
     #[cfg(feature = "transport-log")]
     pub fn with_transport_logger(
         mut self,
-        logger: &messaggero_transport::log::TransportLogger,
+        logger: &transport::log::TransportLogger,
     ) -> Self {
         #[cfg(feature = "fast")]
         if let Some(ref mut fc) = self.fast {
