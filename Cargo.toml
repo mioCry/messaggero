@@ -7,7 +7,7 @@ members = [
 ]
 
 [workspace.package]
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 rust-version = "1.78"
@@ -19,7 +19,7 @@ keywords = ["agents", "a2a", "ai", "async", "protocol"]
 categories = ["network-programming", "asynchronous", "concurrency"]
 
 [workspace.dependencies]
-messaggero = { path = ".", version = "0.1.0" }
+messaggero = { path = ".", version = "0.1.1" }
 
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1", features = ["derive"] }

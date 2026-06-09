@@ -9,9 +9,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+---
+
+## [0.1.1] — 2026-06-09
+
 ### Changed
 - Consolidated workspace into a single publishable crate (`messaggero`); internal modules live under `src/core/` and `src/transport/`.
 - crates.io publish workflow now publishes one crate only.
+- Replaced `ipc` keyword with `ai` in crate metadata.
 
 ### Removed
 - Separate workspace crates `messaggero-core`, `messaggero-transport`, and `messaggero-macros` (code merged into `messaggero`; use `AgentCard::builder()` instead of `#[derive(AgentCard)]`).
@@ -54,5 +59,6 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Demo: `qwen-agents` (Ollama multi-agent pipeline).
 - Dual MIT / Apache-2.0 license.
 
-[Unreleased]: https://github.com/mioCry/messaggero/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/mioCry/messaggero/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/mioCry/messaggero/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/mioCry/messaggero/releases/tag/v0.1.0
