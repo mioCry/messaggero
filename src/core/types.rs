@@ -139,26 +139,31 @@ impl AgentCardBuilder {
         }
     }
 
+    #[must_use]
     pub fn description(mut self, desc: impl Into<String>) -> Self {
         self.description = desc.into();
         self
     }
 
+    #[must_use]
     pub fn url(mut self, url: impl Into<String>) -> Self {
         self.url = url.into();
         self
     }
 
+    #[must_use]
     pub fn version(mut self, ver: impl Into<String>) -> Self {
         self.version = ver.into();
         self
     }
 
-    pub fn streaming(mut self, enabled: bool) -> Self {
+    #[must_use]
+    pub const fn streaming(mut self, enabled: bool) -> Self {
         self.capabilities.streaming = enabled;
         self
     }
 
+    #[must_use]
     pub fn skill(
         mut self,
         id: impl Into<String>,
@@ -462,11 +467,13 @@ impl TaskRequest {
         }
     }
 
+    #[must_use]
     pub fn with_id(mut self, id: impl Into<String>) -> Self {
         self.id = id.into();
         self
     }
 
+    #[must_use]
     pub fn with_session(mut self, session_id: impl Into<String>) -> Self {
         self.session_id = Some(session_id.into());
         self
@@ -542,6 +549,7 @@ impl TaskResponse {
         }
     }
 
+    #[must_use]
     pub fn with_artifact(mut self, artifact: Artifact) -> Self {
         self.artifacts.push(artifact);
         self

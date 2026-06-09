@@ -97,7 +97,7 @@ pub mod prelude {
 /// Internal enum used to select a transport-specific [`TransportLogger`] shim.
 ///
 /// Kept as a regular (non-cfg-gated) enum so that [`ServerBuilder::make_agent`]
-/// compiles without `#[cfg]` on function parameters (unsupported in MSRV 1.75).
+/// compiles without `#[cfg]` on function parameters (unsupported below MSRV 1.78).
 #[allow(dead_code)]
 #[derive(Clone, Copy)]
 enum TransportContext {
@@ -209,9 +209,8 @@ impl ServerBuilder {
     ///
     /// Available only with the `transport-log` feature (disabled by default).
     ///
-    /// When set, each transport receives a transparent [`LoggedAgent`] shim
-    /// that measures handler latency and writes one
-    /// [`LogEntry`](transport::log::LogEntry) per task. The
+    /// When set, each transport receives a transparent logging shim that
+    /// measures handler latency and writes one [`LogEntry`] per task. The
     /// `transport` field in the log correctly identifies whether the call
     /// arrived via the fast binary path (`"fast"`) or A2A HTTP (`"a2a"`).
     ///
@@ -235,10 +234,7 @@ impl ServerBuilder {
     /// ```
     #[must_use]
     #[cfg(feature = "transport-log")]
-    pub fn with_transport_logger(
-        mut self,
-        logger: transport::log::TransportLogger,
-    ) -> Self {
+    pub fn with_transport_logger(mut self, logger: transport::log::TransportLogger) -> Self {
         self.logger = Some(logger);
         self
     }
@@ -390,10 +386,7 @@ impl MessaggeroClient {
     // the redundant-clone that arises from distributing to two inner clients.
     #[must_use]
     #[cfg(feature = "transport-log")]
-    pub fn with_transport_logger(
-        mut self,
-        logger: &transport::log::TransportLogger,
-    ) -> Self {
+    pub fn with_transport_logger(mut self, logger: &transport::log::TransportLogger) -> Self {
         #[cfg(feature = "fast")]
         if let Some(ref mut fc) = self.fast {
             fc.set_logger(logger);

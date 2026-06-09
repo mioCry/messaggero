@@ -10,7 +10,7 @@ members = [
 version = "0.1.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
-rust-version = "1.75"
+rust-version = "1.78"
 authors = ["Cristiano Cuttica <cristiano.cuttica@yahoo.it>"]
 repository = "https://github.com/mioCry/messaggero"
 homepage = "https://github.com/mioCry/messaggero"
@@ -24,7 +24,8 @@ messaggero = { path = ".", version = "0.1.0" }
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-uuid = { version = "1", features = ["v4", "serde"] }
+# Pinned below 1.12: uuid ≥1.23 pulls getrandom 0.4 (edition2024), breaking MSRV 1.78.
+uuid = { version = "=1.11.0", features = ["v4", "serde"] }
 thiserror = "2"
 tracing = { version = "0.1" }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }

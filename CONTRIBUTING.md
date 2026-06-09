@@ -28,7 +28,7 @@ Please be respectful in all interactions.
 
 **Prerequisites**
 
-- Rust stable ≥ 1.75 (MSRV) — install via [rustup](https://rustup.rs)
+- Rust stable ≥ 1.78 (MSRV) — install via [rustup](https://rustup.rs)
 - `cargo` + standard toolchain components
 
 ```bash

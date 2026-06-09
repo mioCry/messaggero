@@ -78,6 +78,47 @@ impl Router {
         self.endpoints.read().await.keys().cloned().collect()
     }
 
+    #[cfg(feature = "transport-log")]
+    fn record_outbound(
+        logger: &super::log::TransportLogger,
+        log_start: std::time::Instant,
+        log_task_id: String,
+        log_session_id: Option<String>,
+        transport: super::log::TransportKind,
+        result: &Result<TaskResponse, TransportError>,
+    ) {
+        #[allow(clippy::cast_possible_truncation)]
+        let duration_us = log_start.elapsed().as_micros() as u64;
+        let llm_us = result.as_ref().ok().and_then(|resp| {
+            let meta = resp.metadata.as_ref()?;
+            meta.get("llm_us")
+                .and_then(|v| v.parse::<u64>().ok())
+                .or_else(|| {
+                    meta.get("llm_ms")
+                        .and_then(|v| v.parse::<u64>().ok())
+                        .map(|ms| ms * 1_000)
+                })
+        });
+        let transport_us = llm_us.map(|l| duration_us.saturating_sub(l));
+        let (status, error) = match result {
+            Ok(_) => ("ok", None),
+            Err(e) => ("error", Some(e.to_string())),
+        };
+        logger.record(super::log::LogEntry {
+            ts: super::log::now_iso8601(),
+            transport,
+            direction: super::log::Direction::Outbound,
+            task_id: log_task_id,
+            session_id: log_session_id,
+            duration_us,
+            llm_us,
+            transport_us,
+            status,
+            error,
+            payload_bytes: None,
+        });
+    }
+
     /// Send a task request to a named agent, automatically choosing the transport.
     pub async fn send(
         &self,
@@ -115,36 +156,14 @@ impl Router {
 
                 #[cfg(feature = "transport-log")]
                 if let Some(ref logger) = self.logger {
-                    #[allow(clippy::cast_possible_truncation)]
-                    let duration_us = log_start.elapsed().as_micros() as u64;
-                    let llm_us = result.as_ref().ok().and_then(|resp| {
-                        let meta = resp.metadata.as_ref()?;
-                        meta.get("llm_us")
-                            .and_then(|v| v.parse::<u64>().ok())
-                            .or_else(|| {
-                                meta.get("llm_ms")
-                                    .and_then(|v| v.parse::<u64>().ok())
-                                    .map(|ms| ms * 1_000)
-                            })
-                    });
-                    let transport_us = llm_us.map(|l| duration_us.saturating_sub(l));
-                    let (status, error) = match &result {
-                        Ok(_) => ("ok", None),
-                        Err(e) => ("error", Some(e.to_string())),
-                    };
-                    logger.record(super::log::LogEntry {
-                        ts: super::log::now_iso8601(),
-                        transport: super::log::TransportKind::Fast,
-                        direction: super::log::Direction::Outbound,
-                        task_id: log_task_id,
-                        session_id: log_session_id,
-                        duration_us,
-                        llm_us,
-                        transport_us,
-                        status,
-                        error,
-                        payload_bytes: None,
-                    });
+                    Self::record_outbound(
+                        logger,
+                        log_start,
+                        log_task_id,
+                        log_session_id,
+                        super::log::TransportKind::Fast,
+                        &result,
+                    );
                 }
 
                 result
@@ -162,36 +181,14 @@ impl Router {
 
                 #[cfg(feature = "transport-log")]
                 if let Some(ref logger) = self.logger {
-                    #[allow(clippy::cast_possible_truncation)]
-                    let duration_us = log_start.elapsed().as_micros() as u64;
-                    let llm_us = result.as_ref().ok().and_then(|resp| {
-                        let meta = resp.metadata.as_ref()?;
-                        meta.get("llm_us")
-                            .and_then(|v| v.parse::<u64>().ok())
-                            .or_else(|| {
-                                meta.get("llm_ms")
-                                    .and_then(|v| v.parse::<u64>().ok())
-                                    .map(|ms| ms * 1_000)
-                            })
-                    });
-                    let transport_us = llm_us.map(|l| duration_us.saturating_sub(l));
-                    let (status, error) = match &result {
-                        Ok(_) => ("ok", None),
-                        Err(e) => ("error", Some(e.to_string())),
-                    };
-                    logger.record(super::log::LogEntry {
-                        ts: super::log::now_iso8601(),
-                        transport: super::log::TransportKind::A2a,
-                        direction: super::log::Direction::Outbound,
-                        task_id: log_task_id,
-                        session_id: log_session_id,
-                        duration_us,
-                        llm_us,
-                        transport_us,
-                        status,
-                        error,
-                        payload_bytes: None,
-                    });
+                    Self::record_outbound(
+                        logger,
+                        log_start,
+                        log_task_id,
+                        log_session_id,
+                        super::log::TransportKind::A2a,
+                        &result,
+                    );
                 }
 
                 result

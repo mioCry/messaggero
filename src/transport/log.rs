@@ -336,7 +336,7 @@ fn now_parts() -> (u64, u64, u64, u64, u64, u64, u32) {
 ///
 /// Uses Howard Hinnant's algorithm:
 /// <http://howardhinnant.github.io/date_algorithms.html>
-fn days_to_ymd(days: u64) -> (u64, u64, u64) {
+const fn days_to_ymd(days: u64) -> (u64, u64, u64) {
     let z = days + 719_468;
     let era = z / 146_097;
     let doe = z % 146_097; // day of era [0, 146096]

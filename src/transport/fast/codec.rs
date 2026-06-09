@@ -1,5 +1,5 @@
-use bytes::{Buf, BufMut, BytesMut};
 use crate::core::{CodecError, TaskRequest, TaskResponse};
+use bytes::{Buf, BufMut, BytesMut};
 use serde::{Deserialize, Serialize};
 use tokio_util::codec::{Decoder, Encoder};
 
@@ -63,8 +63,14 @@ impl Encoder<FastMessage> for FastCodec {
             )));
         }
 
+        let len = u32::try_from(data.len()).map_err(|_| {
+            CodecError::InvalidFrame(format!(
+                "payload too large: {} bytes (max {MAX_FRAME_SIZE})",
+                data.len()
+            ))
+        })?;
         dst.reserve(4 + data.len());
-        dst.put_u32(data.len() as u32);
+        dst.put_u32(len);
         dst.extend_from_slice(&data);
         Ok(())
     }

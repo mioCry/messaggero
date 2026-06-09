@@ -1,4 +1,6 @@
-use crate::core::jsonrpc::*;
+use crate::core::jsonrpc::{
+    JsonRpcRequest, JsonRpcResponse, METHOD_TASKS_CANCEL, METHOD_TASKS_SEND,
+};
 use crate::core::{AgentCard, TaskRequest, TaskResponse, TransportError};
 
 /// HTTP client for A2A-compatible JSON-RPC communication.
@@ -39,6 +41,8 @@ impl A2AClient {
     /// The logger is cloned internally (cheap: only an `mpsc::Sender` clone).
     /// Useful when the client is already constructed and you want to add
     /// logging afterwards (e.g. inside `MessaggeroClient`).
+    ///
+    /// [`TransportLogger`]: super::super::log::TransportLogger
     #[cfg(feature = "transport-log")]
     pub fn set_logger(&mut self, logger: &super::super::log::TransportLogger) {
         self.logger = Some(logger.clone());

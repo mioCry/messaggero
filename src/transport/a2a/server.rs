@@ -1,12 +1,16 @@
 use std::sync::Arc;
 
+use crate::core::jsonrpc::{
+    JsonRpcRequest, JsonRpcResponse, INTERNAL_ERROR, INVALID_PARAMS, INVALID_REQUEST,
+    JSONRPC_VERSION, METHOD_AGENT_CARD, METHOD_NOT_FOUND, METHOD_TASKS_CANCEL, METHOD_TASKS_GET,
+    METHOD_TASKS_SEND, TASK_NOT_FOUND,
+};
+use crate::core::{Agent, TaskRequest, TransportError};
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::{get, post};
 use axum::{Json, Router};
-use crate::core::jsonrpc::*;
-use crate::core::{Agent, TaskRequest, TransportError};
 use tracing::info;
 
 struct AppState {
@@ -70,11 +74,8 @@ async fn jsonrpc_handler(
 }
 
 async fn handle_tasks_send(state: &AppState, request: &JsonRpcRequest) -> JsonRpcResponse {
-    let params = match &request.params {
-        Some(p) => p,
-        None => {
-            return JsonRpcResponse::error(request.id.clone(), INVALID_PARAMS, "missing params");
-        }
+    let Some(params) = &request.params else {
+        return JsonRpcResponse::error(request.id.clone(), INVALID_PARAMS, "missing params");
     };
 
     let task_request: TaskRequest = match serde_json::from_value(params.clone()) {

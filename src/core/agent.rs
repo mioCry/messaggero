@@ -130,6 +130,34 @@ pub struct MiddlewareStack {
     middlewares: Vec<Box<dyn Middleware>>,
 }
 
+struct ChainedAgent<'a> {
+    agent: &'a dyn Agent,
+    remaining: &'a [Box<dyn Middleware>],
+}
+
+#[async_trait]
+impl Agent for ChainedAgent<'_> {
+    fn card(&self) -> AgentCard {
+        self.agent.card()
+    }
+
+    async fn handle_task(&self, request: TaskRequest) -> Result<TaskResponse, AgentError> {
+        if let Some((current, rest)) = self.remaining.split_first() {
+            let next = ChainedAgent {
+                agent: self.agent,
+                remaining: rest,
+            };
+            current.process(request, &next).await
+        } else {
+            self.agent.handle_task(request).await
+        }
+    }
+
+    async fn handle_cancel(&self, task_id: &str) -> Result<TaskStatus, AgentError> {
+        self.agent.handle_cancel(task_id).await
+    }
+}
+
 impl MiddlewareStack {
     /// Create a new stack wrapping the given agent with no middlewares yet.
     pub fn new(agent: impl Agent + 'static) -> Self {
@@ -143,6 +171,7 @@ impl MiddlewareStack {
     ///
     /// Layers are applied in the order they are added: the first `.with()`
     /// is the outermost layer.
+    #[must_use]
     pub fn with(mut self, middleware: impl Middleware + 'static) -> Self {
         self.middlewares.push(Box::new(middleware));
         self
@@ -158,34 +187,6 @@ impl Agent for MiddlewareStack {
     async fn handle_task(&self, request: TaskRequest) -> Result<TaskResponse, AgentError> {
         if self.middlewares.is_empty() {
             return self.agent.handle_task(request).await;
-        }
-
-        struct ChainedAgent<'a> {
-            agent: &'a dyn Agent,
-            remaining: &'a [Box<dyn Middleware>],
-        }
-
-        #[async_trait]
-        impl Agent for ChainedAgent<'_> {
-            fn card(&self) -> AgentCard {
-                self.agent.card()
-            }
-
-            async fn handle_task(&self, request: TaskRequest) -> Result<TaskResponse, AgentError> {
-                if let Some((current, rest)) = self.remaining.split_first() {
-                    let next = ChainedAgent {
-                        agent: self.agent,
-                        remaining: rest,
-                    };
-                    current.process(request, &next).await
-                } else {
-                    self.agent.handle_task(request).await
-                }
-            }
-
-            async fn handle_cancel(&self, task_id: &str) -> Result<TaskStatus, AgentError> {
-                self.agent.handle_cancel(task_id).await
-            }
         }
 
         let chain = ChainedAgent {
