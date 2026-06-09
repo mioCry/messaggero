@@ -15,7 +15,7 @@ authors = ["Cristiano Cuttica <cristiano.cuttica@yahoo.it>"]
 repository = "https://github.com/mioCry/messaggero"
 homepage = "https://github.com/mioCry/messaggero"
 documentation = "https://docs.rs/messaggero"
-keywords = ["agents", "a2a", "ipc", "async", "protocol"]
+keywords = ["agents", "a2a", "ai", "async", "protocol"]
 categories = ["network-programming", "asynchronous", "concurrency"]
 
 [workspace.dependencies]
